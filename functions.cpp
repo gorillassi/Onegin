@@ -2,7 +2,7 @@
 
 size_t get_file_size(const char* file_path)
 {
-    printf("OK3");
+    
 	size_t file_size = 0;
 	struct stat file_stat_buff;
 	FILE *source = fopen(file_path,"rb");
