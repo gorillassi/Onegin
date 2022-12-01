@@ -23,7 +23,6 @@ size_t get_file_size(const char* file_path)
 		}
 		
 	}
-    printf("OK4");
     fclose(source);
 	return file_size;
 }
@@ -32,7 +31,7 @@ void swap(char** n1, char** n2)
 {
     char* tmp = *n1;
     *n1 = *n2;
-    *n2 = tmp;
+    *n2 = tmp;printf("OK2");
 
 }
 
@@ -70,7 +69,6 @@ char* file_buffer(const char* file_path)
 
     size_t num_of_lines = 1;
 
-    printf("OK1");
 
     for (int i = 0; i < l_size; i++)
     {
@@ -80,7 +78,6 @@ char* file_buffer(const char* file_path)
             num_of_lines += 1;
         }
     }
-    printf("OK2");
     printf("%ld", num_of_lines);
     
     char** mas_lines = (char**) calloc(num_of_lines, sizeof(char*));
