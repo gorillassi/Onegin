@@ -2,7 +2,6 @@
 
 size_t get_file_size(const char* file_path)
 {
-    
 	size_t file_size = 0;
 	struct stat file_stat_buff;
 	FILE *source = fopen(file_path,"rb");
@@ -31,14 +30,15 @@ void swap(char** n1, char** n2)
 {
     char* tmp = *n1;
     *n1 = *n2;
-    *n2 = tmp;printf("OK2");
+    *n2 = tmp;
 
 }
 
-char* file_buffer(const char* file_path)
+char* file_buffer(const char* file_path, struct text *Onegin)
 {
     FILE *source = fopen(file_path,"rb");
     FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/OneginRhyme.txt","wb");
+
     if(source == nullptr)
     {
 		return nullptr;
@@ -49,9 +49,9 @@ char* file_buffer(const char* file_path)
 		return nullptr;
         exit(1);
 	}
-    fseek(source,0, SEEK_END);
-    size_t l_size = ftell(source);
-    rewind(source);
+
+    size_t l_size = get_file_size(file_path);
+    Onegin -> file_size = l_size;
 
     char * buffer = (char*) calloc(l_size, sizeof(char));
 
@@ -67,10 +67,17 @@ char* file_buffer(const char* file_path)
         return nullptr;
     }
 
+    Onegin->buffer = buffer;
+    fclose(source);
+    fclose(output);
+    return buffer;
+}
+
+char** get_string_array(char* buffer, struct text *Onegin)
+{
     size_t num_of_lines = 1;
 
-
-    for (int i = 0; i < l_size; i++)
+    for (int i = 0; i < (Onegin->file_size); i++)
     {
         if(buffer[i] == '\n')
         {
@@ -78,42 +85,90 @@ char* file_buffer(const char* file_path)
             num_of_lines += 1;
         }
     }
-    printf("%ld", num_of_lines);
-    
+     
+    Onegin->num_of_lines = num_of_lines;
+
     char** mas_lines = (char**) calloc(num_of_lines, sizeof(char*));
 
-    mas_lines[0] = &buffer[0];
+    mas_lines[0] = buffer;
 
     int j = 1;
-    for (int i = 1; i < l_size; i++)
+    for (int i = 1; i < (Onegin->file_size); i++)
     {
         if (buffer[i] == '\0')
         {
-            mas_lines[j] = &buffer[i + 1];
+            mas_lines[j] = buffer + i + 1;
             j++;
         }
     }
+    return mas_lines;
+}
 
-    //buble sort
-
-    for (int i = 0; i < num_of_lines - 1; i++)
+char* first_letter_start(char *pointer)
+{
+    while ((!isalpha(*pointer)) && (*pointer != '\0'))
     {
-        for (j = 0; j < num_of_lines - i -1; j++)
+        pointer++;
+    }
+    return pointer;   
+}
+
+void sort_from_start(char** mas_lines, struct text *Onegin)
+{
+    FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/OneginRhyme.txt","wb");
+    for (int i = 0; i < (Onegin->num_of_lines - 1); i++)
+    {
+        for (int j = 0; j < (Onegin->num_of_lines - i - 1); j++)
         {
-            if(strcmp(mas_lines[j], mas_lines[j+1]) > 0){
+            if(strcasecmp(first_letter_start(mas_lines[j]), first_letter_start(mas_lines[j+1])) > 0){
                 swap(&mas_lines[j], &mas_lines[j+1]);
             }
         }       
     } 
 
-    for (int i = 0; i < num_of_lines; i++)
+    for (int i = 0; i < (Onegin->num_of_lines); i++)
     {
         fprintf(output ,"%s\n",mas_lines[i]);
-    }
-    
-    free(buffer);
-    free(mas_lines);
-    fclose(source);
+    }    
     fclose(output);
-    return buffer;
+}
+
+char* first_letter_end(char *pointer)
+{
+    while (*pointer != '\0')
+    {
+        pointer++;
+    }
+    while ((!isalpha(*pointer)) && (*pointer != '\0'))
+    {
+        pointer--;
+    }
+    return pointer;   
+}
+
+int strcasecmp_from_end(const char* s1, const char* s2)
+{
+    
+
+    return (*s1 - *s2);
+}
+
+void sort_from_end(char** mas_lines, struct text *Onegin)
+{
+    FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/OneginRhyme.txt","wb");
+    for (int i = 0; i < (Onegin->num_of_lines - 1); i++)
+    {
+        for (int j = 0; j < (Onegin->num_of_lines - i - 1); j++)
+        {
+            if(strcasecmp_from_end(first_letter_end(mas_lines[j]), first_letter_end(mas_lines[j+1])) > 0){
+                swap(&mas_lines[j], &mas_lines[j+1]);
+            }
+        }       
+    } 
+
+    for (int i = (Onegin->num_of_lines-1); i > -1; i--)
+    {
+        fprintf(output ,"%s\n",mas_lines[i]);
+    }    
+    fclose(output);
 }
