@@ -37,14 +37,8 @@ void swap(char** n1, char** n2)
 char* file_buffer(const char* file_path, struct text *Onegin)
 {
     FILE *source = fopen(file_path,"rb");
-    FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/OneginRhyme.txt","wb");
 
     if(source == nullptr)
-    {
-		return nullptr;
-        exit(1);
-	}
-    if(output == nullptr)
     {
 		return nullptr;
         exit(1);
@@ -69,7 +63,6 @@ char* file_buffer(const char* file_path, struct text *Onegin)
 
     Onegin->buffer = buffer;
     fclose(source);
-    fclose(output);
     return buffer;
 }
 
@@ -82,7 +75,7 @@ char** get_string_array(char* buffer, struct text *Onegin)
         if(buffer[i] == '\n')
         {
             buffer[i] = '\0';
-            num_of_lines += 1;
+            num_of_lines++;
         }
     }
      
@@ -115,7 +108,8 @@ char* first_letter_start(char *pointer)
 
 void sort_from_start(char** mas_lines, struct text *Onegin)
 {
-    FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/OneginRhyme.txt","wb");
+    FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/Onegin_from_start.txt","wb");
+    
     for (int i = 0; i < (Onegin->num_of_lines - 1); i++)
     {
         for (int j = 0; j < (Onegin->num_of_lines - i - 1); j++)
@@ -133,7 +127,7 @@ void sort_from_start(char** mas_lines, struct text *Onegin)
     fclose(output);
 }
 
-char* first_letter_end(char *pointer)
+const char* first_letter_end(const char *pointer)
 {
     while (*pointer != '\0')
     {
@@ -146,21 +140,70 @@ char* first_letter_end(char *pointer)
     return pointer;   
 }
 
-int strcasecmp_from_end(const char* s1, const char* s2)
+int strcasecmp_from_end(const char* str1, const char* str2)
 {
-    
+    assert(str1 && str2);
+    assert(str1 != str2);
 
-    return (*s1 - *s2);
+    const char *ptr1 = str1;
+    const char *ptr2 = str2;
+
+    while(*ptr1 != '\n' && *ptr1 != '\0')
+        ptr1++;
+
+    while(!isalpha(*ptr1) && ptr1 > str1)
+        ptr1--;
+
+    while(*ptr2 != '\n' && *ptr2 != '\0')
+        ptr2++;
+
+    while(!isalpha(*ptr2) && ptr2 > str2)
+        ptr2--;
+
+    while(*ptr1 == *ptr2 && --ptr1 > str1 && --ptr2 > str2)
+        ;
+
+    return *ptr1 - *ptr2;
+
+    // s1 = first_letter_end(s1);
+    // s2 = first_letter_end(s2);
+
+    // while ((*s1 != '\0') && (*s2 != '\0'))
+    // {
+    //     if(*s1 != *s2){
+    //         return(*s1 - *s2);           
+    //     }
+    //     s1--;
+    //     s2--;       
+    // }
+    // return 0;
 }
 
 void sort_from_end(char** mas_lines, struct text *Onegin)
 {
-    FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/OneginRhyme.txt","wb");
+    FILE *output = fopen("/home/gorilla/Documents/GitHub/Onegin/Onegin_from_end.txt","wb");
+
+
     for (int i = 0; i < (Onegin->num_of_lines - 1); i++)
     {
         for (int j = 0; j < (Onegin->num_of_lines - i - 1); j++)
         {
-            if(strcasecmp_from_end(first_letter_end(mas_lines[j]), first_letter_end(mas_lines[j+1])) > 0){
+            if(strcasecmp_from_end(mas_lines[j], mas_lines[j+1]) > 0){
+                swap(&mas_lines[j], &mas_lines[j+1]);
+            }
+        }       
+    } 
+
+    for (int i = 0; i < (Onegin->num_of_lines); i++)
+    {
+        fprintf(output ,"%s\n",mas_lines[i]);
+    }
+
+    /*for (int i = 0; i < (Onegin->num_of_lines - 1); i++)
+    {
+        for (int j = 0; j < (Onegin->num_of_lines - i - 1); j++)
+        {
+            if(strcasecmp_from_end(*mas_lines + j, *mas_lines + j + 1 ) > 0){
                 swap(&mas_lines[j], &mas_lines[j+1]);
             }
         }       
@@ -169,6 +212,6 @@ void sort_from_end(char** mas_lines, struct text *Onegin)
     for (int i = (Onegin->num_of_lines-1); i > -1; i--)
     {
         fprintf(output ,"%s\n",mas_lines[i]);
-    }    
+    } */  
     fclose(output);
 }

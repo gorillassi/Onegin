@@ -15,6 +15,7 @@ int main(){
     
     char * buffer = file_buffer(file_path, &Onegin);
     Onegin.mas_lines = get_string_array(buffer, &Onegin);
+    sort_from_start(Onegin.mas_lines, &Onegin);
     sort_from_end(Onegin.mas_lines, &Onegin);
     free(buffer);
     return 0;
